@@ -10,46 +10,11 @@ import { ReservationsPage } from "@/features/reservations/reservations-page";
 import { SettingsPage } from "@/features/settings/settings-page";
 import { WorkflowCanvasPage } from "@/features/workflows/workflows-canvas-page";
 import { WorkflowsPage } from "@/features/workflows/workflows-page";
-import { useEffect, useState } from "react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 
-const CRM_BASE = "https://minish-crm.vercel.app";
-const STYLE_ID = "crm-remote-styles";
-const STYLE_HREF = `${CRM_BASE}/assets/crm-styles.css`;
-
-function loadCrmStyles(): Promise<void> {
-	return new Promise((resolve) => {
-		// 이미 로드된 경우 즉시 resolve
-		const existing = document.getElementById(STYLE_ID) as HTMLLinkElement | null;
-		if (existing) {
-			if (existing.sheet) resolve();
-			else existing.addEventListener("load", () => resolve(), { once: true });
-			return;
-		}
-		const link = document.createElement("link");
-		link.id = STYLE_ID;
-		link.rel = "stylesheet";
-		link.href = STYLE_HREF;
-		link.addEventListener("load", () => resolve(), { once: true });
-		link.addEventListener("error", () => resolve(), { once: true }); // 실패해도 진행
-		document.head.appendChild(link);
-	});
-}
-
+// CSS는 vite-plugin-css-injected-by-js로 JS 번들에 인라인 포함됨
+// → shell에서 로드 시 CSS가 JS와 동시에 적용, 깜빡임 없음
 export function CrmApp() {
-	const [ready, setReady] = useState(() => {
-		// 이미 로드되어 있으면 바로 ready
-		const el = document.getElementById(STYLE_ID) as HTMLLinkElement | null;
-		return !!(el?.sheet);
-	});
-
-	useEffect(() => {
-		if (ready) return;
-		loadCrmStyles().then(() => setReady(true));
-	}, [ready]);
-
-	if (!ready) return null;
-
 	return (
 		<MemoryRouter initialEntries={["/"]} initialIndex={0}>
 			<TooltipProvider>

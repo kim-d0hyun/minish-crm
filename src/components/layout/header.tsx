@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Bell, Menu, Search } from "lucide-react";
 
 interface HeaderProps {
@@ -18,12 +17,11 @@ export function Header({ onMenuClick }: HeaderProps) {
 				>
 					<Menu className="h-4 w-4" />
 				</Button>
-				<div className="relative" style={{ position: "relative" }}>
-					<Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }} />
-					<Input
+				<div style={{ display: "flex", alignItems: "center", width: 256, height: 36, background: "var(--color-muted, #f1f5f9)", borderRadius: 6, padding: "0 12px", gap: 8 }}>
+					<Search style={{ width: 16, height: 16, color: "#94a3b8", flexShrink: 0 }} />
+					<input
 						placeholder="검색..."
-						className="pl-9 w-64 h-9 bg-muted/50 border-0 focus-visible:bg-background focus-visible:ring-1"
-						style={{ paddingLeft: 36 }}
+						style={{ border: "none", outline: "none", background: "transparent", fontSize: 14, color: "inherit", width: "100%", lineHeight: 1 }}
 					/>
 				</div>
 			</div>
