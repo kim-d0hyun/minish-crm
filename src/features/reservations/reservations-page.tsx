@@ -325,7 +325,7 @@ export function ReservationsPage() {
 				))}
 			</div>
 
-			<Tabs value={tab} onValueChange={(v) => setSearchParams((p) => { const n = new URLSearchParams(p); v === "list" ? n.delete("tab") : n.set("tab", v); return n; })}>
+			<Tabs value={tab} onValueChange={(v: string) => { const n = new URLSearchParams(searchParams); if (v === "list") { n.delete("tab"); } else { n.set("tab", v); } setSearchParams(n); }}>
 				<div className="flex items-center justify-between flex-wrap gap-2">
 					<TabsList>
 						<TabsTrigger value="list">목록</TabsTrigger>

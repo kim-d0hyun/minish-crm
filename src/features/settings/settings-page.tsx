@@ -51,7 +51,7 @@ export function SettingsPage() {
 		<div className="space-y-6">
 			<PageHeader title="설정" description="시스템 설정을 관리합니다" />
 
-			<Tabs value={tab} onValueChange={(v) => setSearchParams((p) => { const n = new URLSearchParams(p); v === "profile" ? n.delete("tab") : n.set("tab", v); return n; })} className="space-y-4">
+			<Tabs value={tab} onValueChange={(v: string) => { const n = new URLSearchParams(searchParams); if (v === "profile") { n.delete("tab"); } else { n.set("tab", v); } setSearchParams(n); }} className="space-y-4">
 				<TabsList>
 					<TabsTrigger value="profile">프로필</TabsTrigger>
 					<TabsTrigger value="general">일반</TabsTrigger>

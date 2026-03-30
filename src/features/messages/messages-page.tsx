@@ -195,7 +195,7 @@ export function MessagesPage() {
 				</Card>
 			</div>
 
-			<Tabs value={tab} onValueChange={(v) => setSearchParams((p) => { const n = new URLSearchParams(p); v === "triggers" ? n.delete("tab") : n.set("tab", v); return n; })}>
+			<Tabs value={tab} onValueChange={(v: string) => { const n = new URLSearchParams(searchParams); if (v === "triggers") { n.delete("tab"); } else { n.set("tab", v); } setSearchParams(n); }}>
 				<TabsList>
 					<TabsTrigger value="triggers">자동 발송 트리거</TabsTrigger>
 					<TabsTrigger value="templates">메시지 템플릿</TabsTrigger>

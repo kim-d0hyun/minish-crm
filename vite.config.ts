@@ -4,7 +4,10 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 import { defineConfig } from "vite";
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
+	// production 빌드 시 모든 asset URL을 CRM Vercel 도메인 기준으로 생성
+	// → shell에서 로드해도 /assets/splash-logo.png가 minish-crm.vercel.app 기준으로 resolve됨
+	base: command === "build" ? "https://minish-crm.vercel.app" : "/",
 	plugins: [
 		react(),
 		tailwindcss(),
@@ -36,4 +39,4 @@ export default defineConfig({
 	server: {
 		port: 5173,
 	},
-});
+}));

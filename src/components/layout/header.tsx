@@ -18,11 +18,12 @@ export function Header({ onMenuClick }: HeaderProps) {
 				>
 					<Menu className="h-4 w-4" />
 				</Button>
-				<div className="relative">
-					<Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+				<div className="relative" style={{ position: "relative" }}>
+					<Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }} />
 					<Input
 						placeholder="검색..."
 						className="pl-9 w-64 h-9 bg-muted/50 border-0 focus-visible:bg-background focus-visible:ring-1"
+						style={{ paddingLeft: 36 }}
 					/>
 				</div>
 			</div>

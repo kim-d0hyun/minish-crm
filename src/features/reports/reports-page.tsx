@@ -150,7 +150,7 @@ export function ReportsPage() {
 				}
 			/>
 
-			<Tabs value={tab} onValueChange={(v) => setSearchParams((p) => { const n = new URLSearchParams(p); v === "funnel" ? n.delete("tab") : n.set("tab", v); return n; })}>
+			<Tabs value={tab} onValueChange={(v: string) => { const n = new URLSearchParams(searchParams); if (v === "funnel") { n.delete("tab"); } else { n.set("tab", v); } setSearchParams(n); }}>
 				<TabsList>
 					<TabsTrigger value="funnel">전환 분석</TabsTrigger>
 					<TabsTrigger value="retention">리텐션</TabsTrigger>
