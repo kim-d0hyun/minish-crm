@@ -18,7 +18,8 @@ export default defineConfig(({ command }) => ({
 				// shell이 import("crm/App")으로 사용
 				"./App": "./src/CrmApp",
 			},
-			shared: ["react", "react-dom", "react-router-dom"],
+			// react-router-dom은 공유하지 않음 — 쉘과 CRM이 각자의 Router context를 가짐
+			shared: ["react", "react-dom"],
 		}),
 	],
 	resolve: {

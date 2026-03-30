@@ -11,30 +11,32 @@ import { ReservationsPage } from "@/features/reservations/reservations-page";
 import { SettingsPage } from "@/features/settings/settings-page";
 import { WorkflowCanvasPage } from "@/features/workflows/workflows-canvas-page";
 import { WorkflowsPage } from "@/features/workflows/workflows-page";
-import { Route, Routes } from "react-router-dom";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 
-// Router를 포함하지 않음 — shell의 BrowserRouter를 그대로 사용.
-// shell의 Route path="*" 아래에 마운트되므로 Routes만 있으면 됨.
+// react-router-dom은 shell과 공유하지 않으므로 자체 MemoryRouter를 사용.
+// shell의 BrowserRouter와 완전히 독립된 라우팅 컨텍스트를 가짐.
 export function CrmApp() {
 	return (
-		<TooltipProvider>
-			<SplashScreen>
-				<Routes>
-					<Route element={<AppLayout />}>
-						<Route index element={<DashboardPage />} />
-						<Route path="customers" element={<CustomersPage />} />
-						<Route path="reservations" element={<ReservationsPage />} />
-						<Route path="messages" element={<MessagesPage />} />
-						<Route path="leads" element={<LeadsPage />} />
-						<Route path="workflows" element={<WorkflowsPage />} />
-						<Route path="workflows/new" element={<WorkflowCanvasPage />} />
-						<Route path="workflows/:id" element={<WorkflowCanvasPage />} />
-						<Route path="reports" element={<ReportsPage />} />
-						<Route path="settings" element={<SettingsPage />} />
-					</Route>
-				</Routes>
-			</SplashScreen>
-			<Toaster position="top-right" richColors />
-		</TooltipProvider>
+		<MemoryRouter initialEntries={["/"]} initialIndex={0}>
+			<TooltipProvider>
+				<SplashScreen>
+					<Routes>
+						<Route element={<AppLayout />}>
+							<Route path="/" element={<DashboardPage />} />
+							<Route path="/customers" element={<CustomersPage />} />
+							<Route path="/reservations" element={<ReservationsPage />} />
+							<Route path="/messages" element={<MessagesPage />} />
+							<Route path="/leads" element={<LeadsPage />} />
+							<Route path="/workflows" element={<WorkflowsPage />} />
+							<Route path="/workflows/new" element={<WorkflowCanvasPage />} />
+							<Route path="/workflows/:id" element={<WorkflowCanvasPage />} />
+							<Route path="/reports" element={<ReportsPage />} />
+							<Route path="/settings" element={<SettingsPage />} />
+						</Route>
+					</Routes>
+				</SplashScreen>
+				<Toaster position="top-right" richColors />
+			</TooltipProvider>
+		</MemoryRouter>
 	);
 }
