@@ -15,11 +15,7 @@ export default defineConfig({
 				// shell이 import("crm/App")으로 사용
 				"./App": "./src/CrmApp",
 			},
-			shared: {
-				react: { singleton: true, requiredVersion: "^19.2.4" },
-				"react-dom": { singleton: true, requiredVersion: "^19.2.4" },
-				"react-router-dom": { singleton: true, requiredVersion: "^7.13.2" },
-			},
+			shared: ["react", "react-dom", "react-router-dom"],
 		}),
 	],
 	resolve: {
