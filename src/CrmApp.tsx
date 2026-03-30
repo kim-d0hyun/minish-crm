@@ -11,11 +11,28 @@ import { ReservationsPage } from "@/features/reservations/reservations-page";
 import { SettingsPage } from "@/features/settings/settings-page";
 import { WorkflowCanvasPage } from "@/features/workflows/workflows-canvas-page";
 import { WorkflowsPage } from "@/features/workflows/workflows-page";
+import { useEffect } from "react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 
-// react-router-dom은 shell과 공유하지 않으므로 자체 MemoryRouter를 사용.
-// shell의 BrowserRouter와 완전히 독립된 라우팅 컨텍스트를 가짐.
+const CRM_BASE = "https://minish-crm.vercel.app";
+
+function useCrmStyles() {
+	useEffect(() => {
+		const id = "crm-remote-styles";
+		if (document.getElementById(id)) return;
+		const link = document.createElement("link");
+		link.id = id;
+		link.rel = "stylesheet";
+		link.href = `${CRM_BASE}/assets/crm-styles.css`;
+		document.head.appendChild(link);
+		return () => {
+			document.getElementById(id)?.remove();
+		};
+	}, []);
+}
+
 export function CrmApp() {
+	useCrmStyles();
 	return (
 		<MemoryRouter initialEntries={["/"]} initialIndex={0}>
 			<TooltipProvider>

@@ -28,9 +28,15 @@ export default defineConfig(({ command }) => ({
 		},
 	},
 	build: {
-		// vite-plugin-federation 필수 옵션
 		target: "esnext",
 		minify: false,
+		rollupOptions: {
+			output: {
+				// CSS 파일명을 고정 — CrmApp에서 동적 주입 시 URL을 알 수 있게
+				assetFileNames: (info) =>
+					info.name?.endsWith(".css") ? "assets/crm-styles.css" : "assets/[name]-[hash][extname]",
+			},
+		},
 	},
 	preview: {
 		port: 3001,
