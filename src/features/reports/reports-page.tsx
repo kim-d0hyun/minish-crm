@@ -225,8 +225,8 @@ export function ReportsPage() {
 												<span className="text-xs text-muted-foreground">노쇼 {m.noShow}% · 휴면 {m.dormant}%</span>
 											</div>
 											<div className="flex h-3 rounded-full overflow-hidden bg-muted">
-												<div className="bg-red-400" style={{ width: `${m.noShow * 3}%` }} title={`노쇼 ${m.noShow}%`} />
-												<div className="bg-amber-400 ml-0.5" style={{ width: `${m.dormant * 2}%` }} title={`휴면 ${m.dormant}%`} />
+												<div className="bg-red-400" style={{ width: `${m.noShow}%` }} title={`노쇼 ${m.noShow}%`} />
+												<div className="bg-amber-400 ml-0.5" style={{ width: `${m.dormant}%` }} title={`휴면 ${m.dormant}%`} />
 											</div>
 										</div>
 									))}
@@ -293,7 +293,7 @@ export function ReportsPage() {
 											<div className="h-2.5 bg-muted rounded-full overflow-hidden">
 												<div
 													className="h-full bg-primary/70 rounded-full"
-													style={{ width: `${r.pct * 3}%` }}
+													style={{ width: `${r.pct}%` }}
 												/>
 											</div>
 										</div>

@@ -1,3 +1,7 @@
+import { ArrowDown, ArrowUp, ArrowUpDown, CalendarDays, ChevronRight, Download, Phone, Plus, Search, Star, User } from "lucide-react";
+import { useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import { toast } from "sonner";
 import { PageHeader } from "@/components/common/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -33,12 +37,15 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import {
+	Sheet,
+	SheetContent,
+	SheetDescription,
+	SheetHeader,
+	SheetTitle,
+} from "@/components/ui/sheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { ArrowDown, ArrowUp, ArrowUpDown, ChevronRight, Download, Plus, Search, Star } from "lucide-react";
-import { useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import { toast } from "sonner";
 
 interface Customer {
 	id: string;
@@ -125,9 +132,9 @@ function SortableHeader({
 	);
 }
 
-function CustomerRow({ customer }: { customer: Customer }) {
+function CustomerRow({ customer, onClick }: { customer: Customer; onClick: () => void }) {
 	return (
-		<div className="flex items-center justify-between py-3 px-4 hover:bg-muted/50 rounded-lg transition-all duration-150 cursor-pointer group">
+		<button type="button" className="flex w-full items-center justify-between py-3 px-4 hover:bg-muted/50 rounded-lg transition-all duration-150 cursor-pointer group text-left" onClick={onClick}>
 			<div className="flex items-center gap-4 min-w-0">
 				<div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-sm font-medium shrink-0 text-primary">
 					{customer.grade === "VIP" ? (
@@ -167,7 +174,7 @@ function CustomerRow({ customer }: { customer: Customer }) {
 				</div>
 			</div>
 			<ChevronRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-		</div>
+		</button>
 	);
 }
 
@@ -184,6 +191,7 @@ export function CustomersPage() {
 
 	const [customers, setCustomers] = useState(initialCustomers);
 	const [dialogOpen, setDialogOpen] = useState(false);
+	const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
 	const [form, setForm] = useState({ name: "", phone: "", interests: "", counselor: "이상담" });
 
 	const setParam = (updates: Record<string, string>) => {
@@ -256,6 +264,7 @@ export function CustomersPage() {
 	const gradeCounts = useMemo(() => ({
 		all: customers.length,
 		VIP: customers.filter((c) => c.grade === "VIP").length,
+		일반: customers.filter((c) => c.grade === "일반").length,
 		신규: customers.filter((c) => c.grade === "신규").length,
 		휴면: customers.filter((c) => c.grade === "휴면").length,
 	}), [customers]);
@@ -374,11 +383,12 @@ export function CustomersPage() {
 				<TabsList>
 					<TabsTrigger value="all">전체 ({gradeCounts.all})</TabsTrigger>
 					<TabsTrigger value="VIP">VIP ({gradeCounts.VIP})</TabsTrigger>
+					<TabsTrigger value="일반">일반 ({gradeCounts.일반})</TabsTrigger>
 					<TabsTrigger value="신규">신규 ({gradeCounts.신규})</TabsTrigger>
 					<TabsTrigger value="휴면">휴면 ({gradeCounts.휴면})</TabsTrigger>
 				</TabsList>
 
-				{["all", "VIP", "신규", "휴면"].map((tab) => (
+				{["all", "VIP", "일반", "신규", "휴면"].map((tab) => (
 					<TabsContent key={tab} value={tab} className="mt-4">
 						<Card>
 							{tab === "휴면" && (
@@ -393,7 +403,7 @@ export function CustomersPage() {
 								{paged.length > 0 ? (
 									<div className="divide-y">
 										{paged.map((customer) => (
-											<CustomerRow key={customer.id} customer={customer} />
+											<CustomerRow key={customer.id} customer={customer} onClick={() => setSelectedCustomer(customer)} />
 										))}
 									</div>
 								) : (
@@ -437,6 +447,84 @@ export function CustomersPage() {
 					</TabsContent>
 				))}
 			</Tabs>
+
+			{/* 고객 상세 슬라이드 패널 */}
+			<Sheet open={selectedCustomer !== null} onOpenChange={(open) => { if (!open) { setSelectedCustomer(null); } }}>
+				<SheetContent className="w-full sm:max-w-md overflow-y-auto">
+					{selectedCustomer && (
+						<>
+							<SheetHeader className="pb-4">
+								<div className="flex items-center gap-3">
+									<div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
+										{selectedCustomer.grade === "VIP" ? (
+											<Star className="h-5 w-5 text-amber-500 fill-amber-500" />
+										) : (
+											<span className="text-lg font-semibold">{selectedCustomer.name.charAt(0)}</span>
+										)}
+									</div>
+									<div>
+										<SheetTitle className="flex items-center gap-2">
+											{selectedCustomer.name}
+											<Badge variant="outline" className={cn("text-xs px-1.5 py-0", gradeColor(selectedCustomer.grade))}>
+												{selectedCustomer.grade}
+											</Badge>
+										</SheetTitle>
+										<SheetDescription>{selectedCustomer.counselor} 담당</SheetDescription>
+									</div>
+								</div>
+							</SheetHeader>
+
+							<div className="space-y-5 px-4 pb-6">
+								<div className="grid grid-cols-2 gap-3">
+									<div className="rounded-lg bg-muted/50 p-3">
+										<p className="text-xs text-muted-foreground mb-1">총 방문</p>
+										<p className="text-xl font-bold">{selectedCustomer.visits}회</p>
+									</div>
+									<div className="rounded-lg bg-muted/50 p-3">
+										<p className="text-xs text-muted-foreground mb-1">총 결제</p>
+										<p className="text-xl font-bold">{formatCurrency(selectedCustomer.totalSpent)}</p>
+									</div>
+								</div>
+
+								<div className="space-y-2.5">
+									<div className="flex items-center gap-3 py-2 border-b">
+										<Phone className="h-4 w-4 text-muted-foreground shrink-0" />
+										<div>
+											<p className="text-xs text-muted-foreground">전화번호</p>
+											<a href={`tel:${selectedCustomer.phone}`} className="text-sm font-medium hover:text-primary">{selectedCustomer.phone}</a>
+										</div>
+									</div>
+									<div className="flex items-center gap-3 py-2 border-b">
+										<CalendarDays className="h-4 w-4 text-muted-foreground shrink-0" />
+										<div>
+											<p className="text-xs text-muted-foreground">마지막 방문</p>
+											<p className="text-sm font-medium">{selectedCustomer.lastVisit}</p>
+										</div>
+									</div>
+									<div className="flex items-center gap-3 py-2 border-b">
+										<User className="h-4 w-4 text-muted-foreground shrink-0" />
+										<div>
+											<p className="text-xs text-muted-foreground">담당 상담실장</p>
+											<p className="text-sm font-medium">{selectedCustomer.counselor}</p>
+										</div>
+									</div>
+								</div>
+
+								{selectedCustomer.interests.length > 0 && (
+									<div>
+										<p className="text-xs text-muted-foreground mb-2">관심 시술</p>
+										<div className="flex flex-wrap gap-1.5">
+											{selectedCustomer.interests.map((interest) => (
+												<Badge key={interest} variant="secondary" className="text-xs">{interest}</Badge>
+											))}
+										</div>
+									</div>
+								)}
+							</div>
+						</>
+					)}
+				</SheetContent>
+			</Sheet>
 		</div>
 	);
 }
