@@ -119,11 +119,11 @@ function MetricGrid({ metrics }: { metrics: KpiMetric[] }) {
 						<p className="text-2xl font-bold">{m.value}</p>
 						<div className="flex items-center gap-1 mt-1">
 							{m.positive ? (
-								<ArrowUp className="h-3 w-3 text-emerald-600" />
+								<ArrowUp className="h-3 w-3 text-emerald-500" />
 							) : (
-								<ArrowDown className="h-3 w-3 text-red-500" />
+								<ArrowDown className="h-3 w-3 text-red-400" />
 							)}
-							<span className={cn("text-xs", m.positive ? "text-emerald-600" : "text-red-500")}>{m.change}</span>
+							<span className={cn("text-xs font-medium", m.positive ? "text-emerald-600" : "text-red-500")}>{m.change}</span>
 							<span className="text-xs text-muted-foreground">vs 전월</span>
 						</div>
 					</CardContent>
@@ -149,28 +149,74 @@ function HBarChart({
 	formatValue: (v: number) => string;
 }) {
 	return (
-		<div className="space-y-3">
+		<div className="space-y-2.5">
 			{data.map((row) => {
 				const val = row[valueKey] as number;
 				const label = row[labelKey] as string;
 				const pct = Math.min((val / maxValue) * 100, 100);
 				return (
-					<div key={label} className="flex items-center gap-3">
+					<div key={label} className="flex items-center gap-2.5">
 						<span className="text-xs text-muted-foreground w-12 shrink-0 text-right">{label}</span>
-						<div className="flex-1 h-7 bg-muted rounded-md overflow-hidden relative">
+						<div className="flex-1 h-5 bg-muted/60 rounded-full overflow-hidden">
 							<div
-								className={cn("h-full rounded-md flex items-center px-3 transition-all", colorClass)}
-								style={{ width: `${pct}%` }}
-							>
-								<span className="text-xs text-white font-semibold whitespace-nowrap">{formatValue(val)}</span>
-							</div>
+								className={cn("h-full rounded-full transition-all duration-500", colorClass)}
+								style={{ width: `${Math.max(pct, 2)}%` }}
+							/>
 						</div>
+						<span className="text-xs font-semibold text-foreground w-10 shrink-0">{formatValue(val)}</span>
 					</div>
 				);
 			})}
 		</div>
 	);
 }
+
+function GenderBar({ maleRatio }: { maleRatio: number }) {
+	const femaleRatio = 100 - maleRatio;
+	return (
+		<div className="space-y-1.5 border-t pt-3">
+			<div className="flex items-center justify-between text-xs">
+				<span className="text-muted-foreground">성별 비율</span>
+				<span className="text-foreground font-medium">남 {maleRatio}% · 여 {femaleRatio.toFixed(1)}%</span>
+			</div>
+			<div className="flex h-2 rounded-full overflow-hidden gap-px">
+				<div className="bg-blue-400 rounded-l-full" style={{ width: `${maleRatio}%` }} />
+				<div className="bg-pink-400 rounded-r-full" style={{ width: `${femaleRatio}%` }} />
+			</div>
+			<div className="flex items-center gap-3 text-[11px] text-muted-foreground">
+				<span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-blue-400 inline-block" />남성</span>
+				<span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-pink-400 inline-block" />여성</span>
+			</div>
+		</div>
+	);
+}
+
+const insightItems = [
+	{
+		tag: "핵심 기회",
+		stat: "+19.3%p",
+		headline: "서울 30-40대 여성 직장인·전문직",
+		body: "동의율 72.5%로 전체 평균 대비 가장 높은 그룹입니다. 이 고객군을 집중 관리하면 소개 전환 효과가 큽니다.",
+		tagCls: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
+		statCls: "text-emerald-600 dark:text-emerald-400",
+	},
+	{
+		tag: "전략 포인트",
+		stat: "84.1%",
+		headline: "초진 후 45일 이내 재방문이 핵심",
+		body: "재방문 유도에 성공한 고객의 동의율은 84.1%. 팔로업 리마인더와 웰컴 콜이 동의 전환의 가장 강력한 레버입니다.",
+		tagCls: "bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300",
+		statCls: "text-sky-600 dark:text-sky-400",
+	},
+	{
+		tag: "개선 필요",
+		stat: "5.1×",
+		headline: "20대 학생 미동의율 집중 관리",
+		body: "미동의 고객 중 20대 학생 비율이 동의 그룹 대비 5.1배 높습니다. 가격 플랜·할부 옵션 등 연령 맞춤 전략이 필요합니다.",
+		tagCls: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
+		statCls: "text-amber-600 dark:text-amber-400",
+	},
+];
 
 export function ReportsPage() {
 	const [searchParams, setSearchParams] = useSearchParams();
@@ -210,22 +256,22 @@ export function ReportsPage() {
 						<CardContent>
 							<div className="space-y-3">
 								{[
-									{ stage: "유입", count: 892, width: "100%", color: "bg-slate-700" },
-									{ stage: "상담", count: 534, width: "59.8%", color: "bg-slate-600" },
-									{ stage: "예약", count: 321, width: "36.0%", color: "bg-slate-500" },
-									{ stage: "방문", count: 287, width: "32.2%", color: "bg-primary" },
+									{ stage: "유입", count: 892, width: 100, color: "bg-slate-700" },
+									{ stage: "상담", count: 534, width: 59.8, color: "bg-slate-500" },
+									{ stage: "예약", count: 321, width: 36.0, color: "bg-slate-400" },
+									{ stage: "방문", count: 287, width: 32.2, color: "bg-primary" },
 								].map((s) => (
-									<div key={s.stage} className="flex items-center gap-4">
-										<span className="text-sm font-medium w-12 shrink-0">{s.stage}</span>
-										<div className="flex-1 h-9 bg-muted rounded-md overflow-hidden">
+									<div key={s.stage} className="flex items-center gap-3">
+										<span className="text-sm font-medium w-10 shrink-0 text-muted-foreground">{s.stage}</span>
+										<div className="flex-1 h-8 bg-muted/60 rounded-full overflow-hidden">
 											<div
-												className={cn("h-full rounded-md flex items-center px-4 transition-all", s.color)}
-												style={{ width: s.width }}
+												className={cn("h-full rounded-full flex items-center px-4 transition-all", s.color)}
+												style={{ width: `${s.width}%` }}
 											>
 												<span className="text-sm text-white font-semibold">{s.count.toLocaleString()}</span>
 											</div>
 										</div>
-										<span className="text-sm text-muted-foreground w-14 text-right font-medium">{s.width}</span>
+										<span className="text-sm font-semibold text-foreground w-14 text-right">{s.width}%</span>
 									</div>
 								))}
 							</div>
@@ -262,19 +308,19 @@ export function ReportsPage() {
 								<div className="space-y-4">
 									{monthlyRetention.map((m) => (
 										<div key={m.month}>
-											<div className="flex items-center justify-between mb-1">
+											<div className="flex items-center justify-between mb-1.5">
 												<span className="text-xs font-medium">{m.month}</span>
 												<span className="text-xs text-muted-foreground">노쇼 {m.noShow}% · 휴면 {m.dormant}%</span>
 											</div>
-											<div className="flex h-3 rounded-full overflow-hidden bg-muted">
-												<div className="bg-red-400" style={{ width: `${m.noShow}%` }} title={`노쇼 ${m.noShow}%`} />
-												<div className="bg-amber-400 ml-0.5" style={{ width: `${m.dormant}%` }} title={`휴면 ${m.dormant}%`} />
+											<div className="flex h-2.5 rounded-full overflow-hidden bg-muted/60">
+												<div className="bg-red-400 rounded-l-full" style={{ width: `${m.noShow}%` }} />
+												<div className="bg-amber-400" style={{ width: `${m.dormant}%` }} />
 											</div>
 										</div>
 									))}
 									<div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
-										<div className="flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-sm bg-red-400" />노쇼율</div>
-										<div className="flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-sm bg-amber-400" />휴면율</div>
+										<span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-red-400 inline-block" />노쇼율</span>
+										<span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-amber-400 inline-block" />휴면율</span>
 									</div>
 								</div>
 							</CardContent>
@@ -309,13 +355,13 @@ export function ReportsPage() {
 								<CardTitle className="text-base">월별 매출 추이</CardTitle>
 							</CardHeader>
 							<CardContent>
-								<div className="space-y-3">
+								<div className="space-y-2.5">
 									{monthlyRevenue.map((m) => (
-										<div key={m.month} className="flex items-center gap-3">
+										<div key={m.month} className="flex items-center gap-2.5">
 											<span className="text-xs text-muted-foreground w-10 shrink-0 text-right">{m.month}</span>
-											<div className="flex-1 h-8 bg-muted rounded-md overflow-hidden">
+											<div className="flex-1 h-7 bg-muted/60 rounded-full overflow-hidden">
 												<div
-													className="h-full bg-primary rounded-md flex items-center px-3 transition-all"
+													className="h-full bg-primary rounded-full flex items-center px-3 transition-all"
 													style={{ width: `${(m.revenue / maxRevenue) * 100}%` }}
 												>
 													<span className="text-xs text-white font-semibold whitespace-nowrap">
@@ -323,11 +369,11 @@ export function ReportsPage() {
 													</span>
 												</div>
 											</div>
-											<span className="text-xs text-muted-foreground w-14 shrink-0 text-right">{m.visits}건</span>
+											<span className="text-xs text-muted-foreground w-12 shrink-0 text-right">{m.visits}건</span>
 										</div>
 									))}
 								</div>
-								<div className="mt-3 flex items-center gap-1 text-xs text-muted-foreground">
+								<div className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground">
 									<TrendingUp className="h-3.5 w-3.5 text-emerald-500" />
 									최근 6개월 평균 {((monthlyRevenue.reduce((s, m) => s + m.revenue, 0) / 6) / 1000000).toFixed(1)}M 원
 								</div>
@@ -339,17 +385,17 @@ export function ReportsPage() {
 								<CardTitle className="text-base">시술 유형별 매출 비중</CardTitle>
 							</CardHeader>
 							<CardContent>
-								<div className="space-y-2.5">
+								<div className="space-y-3">
 									{revenueByType.map((r) => (
 										<div key={r.type}>
 											<div className="flex items-center justify-between mb-1">
 												<span className="text-xs font-medium">{r.type}</span>
 												<div className="flex items-center gap-2">
 													<span className="text-xs text-muted-foreground">{(r.revenue / 1000000).toFixed(1)}M</span>
-													<span className="text-xs font-semibold w-10 text-right">{r.pct}%</span>
+													<span className="text-xs font-bold text-foreground w-10 text-right">{r.pct}%</span>
 												</div>
 											</div>
-											<div className="h-2.5 bg-muted rounded-full overflow-hidden">
+											<div className="h-2 bg-muted/60 rounded-full overflow-hidden">
 												<div
 													className="h-full bg-primary/70 rounded-full"
 													style={{ width: `${r.pct}%` }}
@@ -369,29 +415,29 @@ export function ReportsPage() {
 						{counselorPerformance.map((c) => (
 							<Card key={c.name}>
 								<CardContent className="pt-4">
-									<div className="flex items-center justify-between mb-3">
+									<div className="flex items-center justify-between mb-4">
 										<p className="font-semibold">{c.name}</p>
-										<div className={cn("flex items-center gap-1 text-xs", c.trend ? "text-emerald-600" : "text-red-500")}>
+										<div className={cn("flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full", c.trend ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300" : "bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-400")}>
 											{c.trend ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />}
 											{c.trend ? "상승" : "하락"}
 										</div>
 									</div>
-									<div className="grid grid-cols-2 gap-3">
+									<div className="grid grid-cols-2 gap-x-4 gap-y-3">
 										<div>
-											<p className="text-xs text-muted-foreground">상담 건수</p>
-											<p className="text-lg font-bold">{c.consultations}</p>
+											<p className="text-xs text-muted-foreground mb-0.5">상담 건수</p>
+											<p className="text-xl font-bold">{c.consultations}</p>
 										</div>
 										<div>
-											<p className="text-xs text-muted-foreground">확정 금액</p>
-											<p className="text-lg font-bold">{formatCurrency(c.confirmedAmount)}</p>
+											<p className="text-xs text-muted-foreground mb-0.5">확정 금액</p>
+											<p className="text-xl font-bold">{formatCurrency(c.confirmedAmount)}</p>
 										</div>
 										<div>
-											<p className="text-xs text-muted-foreground">동의율</p>
-											<p className={cn("text-lg font-bold", c.consentRate >= 88 ? "text-emerald-600" : "text-amber-600")}>{c.consentRate}%</p>
+											<p className="text-xs text-muted-foreground mb-0.5">동의율</p>
+											<p className={cn("text-xl font-bold", c.consentRate >= 88 ? "text-emerald-600 dark:text-emerald-400" : "text-amber-600 dark:text-amber-400")}>{c.consentRate}%</p>
 										</div>
 										<div>
-											<p className="text-xs text-muted-foreground">전환 건수</p>
-											<p className="text-lg font-bold">{c.conversions}</p>
+											<p className="text-xs text-muted-foreground mb-0.5">전환 건수</p>
+											<p className="text-xl font-bold">{c.conversions}</p>
 										</div>
 									</div>
 								</CardContent>
@@ -407,7 +453,7 @@ export function ReportsPage() {
 							<div className="overflow-x-auto">
 								<table className="w-full text-sm">
 									<thead>
-										<tr className="border-b bg-muted/40">
+										<tr className="border-b">
 											<th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">상담 실장</th>
 											<th className="text-center py-3 px-4 text-xs font-medium text-muted-foreground">상담 건수</th>
 											<th className="text-center py-3 px-4 text-xs font-medium text-muted-foreground">전환 건수</th>
@@ -419,17 +465,17 @@ export function ReportsPage() {
 									</thead>
 									<tbody>
 										{counselorPerformance.map((c) => (
-											<tr key={c.name} className="border-b last:border-0 hover:bg-muted/50 transition-colors">
-												<td className="py-3 px-4 font-medium">{c.name}</td>
-												<td className="py-3 px-4 text-center">{c.consultations}</td>
-												<td className="py-3 px-4 text-center">{c.conversions}</td>
+											<tr key={c.name} className="border-b last:border-0 hover:bg-muted/40 transition-colors">
+												<td className="py-3 px-4 font-semibold">{c.name}</td>
+												<td className="py-3 px-4 text-center text-muted-foreground">{c.consultations}</td>
+												<td className="py-3 px-4 text-center text-muted-foreground">{c.conversions}</td>
 												<td className="py-3 px-4 text-center">
-													<span className="text-emerald-600 font-semibold">{c.rate}</span>
+													<span className="text-emerald-600 dark:text-emerald-400 font-semibold">{c.rate}</span>
 												</td>
-												<td className="py-3 px-4 text-right font-semibold">{c.revenue}</td>
+												<td className="py-3 px-4 text-right font-medium">{c.revenue}</td>
 												<td className="py-3 px-4 text-right font-semibold">{formatCurrency(c.confirmedAmount)}</td>
 												<td className="py-3 px-4 text-center">
-													<span className={cn("font-semibold", c.consentRate >= 88 ? "text-emerald-600" : "text-amber-600")}>{c.consentRate}%</span>
+													<span className={cn("font-semibold", c.consentRate >= 88 ? "text-emerald-600 dark:text-emerald-400" : "text-amber-600 dark:text-amber-400")}>{c.consentRate}%</span>
 												</td>
 											</tr>
 										))}
@@ -443,16 +489,20 @@ export function ReportsPage() {
 				{/* ── 동의 분석 ── */}
 				<TabsContent value="analysis" className="mt-4 space-y-5">
 					{/* 정의 배너 */}
-					<div className="flex items-start gap-3 rounded-lg border border-blue-200 bg-blue-50 p-3.5">
-						<div className="h-5 w-5 rounded-full bg-blue-500 flex items-center justify-center shrink-0 mt-0.5">
-							<span className="text-white text-xs font-bold">i</span>
+					<div className="flex items-start gap-3.5 rounded-xl border bg-card p-4">
+						<div className="h-8 w-8 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
+							<span className="text-blue-600 dark:text-blue-400 text-sm font-bold leading-none">i</span>
 						</div>
-						<div>
-							<p className="text-sm font-medium text-blue-900">동의율 계산 기준</p>
-							<p className="text-xs text-blue-700 mt-0.5">
-								<strong>동의율(%) = 치료를 권유받은 환자 중 실제로 동의한 수 / 치료를 권유받은 전체 수 × 100</strong>
+						<div className="space-y-0.5">
+							<p className="text-sm font-semibold text-foreground">동의율 계산 기준</p>
+							<p className="text-sm text-muted-foreground">
+								동의율(%) ={" "}
+								<span className="font-semibold text-foreground">치료 권유 후 실제 동의한 수</span>
+								{" "}÷{" "}
+								<span className="font-semibold text-foreground">치료 권유받은 전체 수</span>
+								{" "}× 100
 							</p>
-							<p className="text-xs text-blue-600 mt-1">단순 내원·검진 환자는 분모에서 제외됩니다.</p>
+							<p className="text-xs text-muted-foreground">단순 내원·검진 환자는 분모에서 제외됩니다.</p>
 						</div>
 					</div>
 
@@ -460,16 +510,19 @@ export function ReportsPage() {
 						{/* 동의 고객 프로필 */}
 						<Card>
 							<CardHeader>
-								<CardTitle className="text-base">동의 고객 프로필 ({consentAnalysis.consented.total}명)</CardTitle>
+								<div className="flex items-center justify-between">
+									<CardTitle className="text-base">동의 고객 프로필</CardTitle>
+									<span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-1 rounded-md">{consentAnalysis.consented.total}명</span>
+								</div>
 							</CardHeader>
 							<CardContent className="space-y-5">
-								<div className="text-center">
-									<p className="text-4xl font-bold text-emerald-600">88.4%</p>
-									<p className="text-xs text-muted-foreground mt-1">치료 권유 환자 기준 동의율</p>
+								<div className="text-center py-2">
+									<p className="text-5xl font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">88.4%</p>
+									<p className="text-xs text-muted-foreground mt-1.5">치료 권유 환자 기준 동의율</p>
 								</div>
 
 								<div>
-									<p className="text-xs font-medium text-muted-foreground mb-2">직업군</p>
+									<p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2.5">직업군</p>
 									<HBarChart
 										data={consentAnalysis.consented.byOccupation as unknown as Record<string, unknown>[]}
 										valueKey="pct"
@@ -481,7 +534,7 @@ export function ReportsPage() {
 								</div>
 
 								<div>
-									<p className="text-xs font-medium text-muted-foreground mb-2">지역</p>
+									<p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2.5">지역</p>
 									<HBarChart
 										data={consentAnalysis.consented.byRegion as unknown as Record<string, unknown>[]}
 										valueKey="pct"
@@ -493,7 +546,7 @@ export function ReportsPage() {
 								</div>
 
 								<div>
-									<p className="text-xs font-medium text-muted-foreground mb-2">연령대</p>
+									<p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2.5">연령대</p>
 									<HBarChart
 										data={consentAnalysis.consented.byAge as unknown as Record<string, unknown>[]}
 										valueKey="pct"
@@ -504,93 +557,87 @@ export function ReportsPage() {
 									/>
 								</div>
 
-								<div className="flex items-center justify-between text-xs text-muted-foreground border-t pt-3">
-									<span>남성 비율</span>
-									<span className="font-semibold text-foreground">{consentAnalysis.consented.maleRatio}%</span>
-								</div>
+								<GenderBar maleRatio={consentAnalysis.consented.maleRatio} />
 							</CardContent>
 						</Card>
 
 						{/* 미동의 고객 프로필 */}
 						<Card>
 							<CardHeader>
-								<CardTitle className="text-base">미동의 고객 프로필 ({consentAnalysis.nonConsented.total}명)</CardTitle>
+								<div className="flex items-center justify-between">
+									<CardTitle className="text-base">미동의 고객 프로필</CardTitle>
+									<span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-1 rounded-md">{consentAnalysis.nonConsented.total}명</span>
+								</div>
 							</CardHeader>
 							<CardContent className="space-y-5">
-								<div className="text-center">
-									<p className="text-4xl font-bold text-rose-500">11.6%</p>
-									<p className="text-xs text-muted-foreground mt-1">미동의율</p>
+								<div className="text-center py-2">
+									<p className="text-5xl font-bold text-rose-500 dark:text-rose-400 tabular-nums">11.6%</p>
+									<p className="text-xs text-muted-foreground mt-1.5">미동의율</p>
 								</div>
 
 								<div>
-									<p className="text-xs font-medium text-muted-foreground mb-2">직업군</p>
+									<p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2.5">직업군</p>
 									<HBarChart
 										data={consentAnalysis.nonConsented.byOccupation as unknown as Record<string, unknown>[]}
 										valueKey="pct"
 										labelKey="label"
 										maxValue={100}
-										colorClass="bg-rose-500"
+										colorClass="bg-rose-400"
 										formatValue={(v) => `${v}%`}
 									/>
 								</div>
 
 								<div>
-									<p className="text-xs font-medium text-muted-foreground mb-2">지역</p>
+									<p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2.5">지역</p>
 									<HBarChart
 										data={consentAnalysis.nonConsented.byRegion as unknown as Record<string, unknown>[]}
 										valueKey="pct"
 										labelKey="label"
 										maxValue={100}
-										colorClass="bg-rose-500"
+										colorClass="bg-rose-400"
 										formatValue={(v) => `${v}%`}
 									/>
 								</div>
 
 								<div>
-									<p className="text-xs font-medium text-muted-foreground mb-2">연령대</p>
+									<p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2.5">연령대</p>
 									<HBarChart
 										data={consentAnalysis.nonConsented.byAge as unknown as Record<string, unknown>[]}
 										valueKey="pct"
 										labelKey="label"
 										maxValue={100}
-										colorClass="bg-rose-500"
+										colorClass="bg-rose-400"
 										formatValue={(v) => `${v}%`}
 									/>
 								</div>
 
-								<div className="flex items-center justify-between text-xs text-muted-foreground border-t pt-3">
-									<span>남성 비율</span>
-									<span className="font-semibold text-foreground">{consentAnalysis.nonConsented.maleRatio}%</span>
-								</div>
+								<GenderBar maleRatio={consentAnalysis.nonConsented.maleRatio} />
 							</CardContent>
 						</Card>
 					</div>
 
 					{/* 인사이트 */}
-					<Card>
-						<CardHeader>
-							<CardTitle className="text-base">인사이트</CardTitle>
-						</CardHeader>
-						<CardContent>
-							<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-								<div className="rounded-lg border border-emerald-200 bg-emerald-50 dark:bg-emerald-950/30 dark:border-emerald-900 p-4">
-									<p className="text-sm text-emerald-800 dark:text-emerald-300">
-										서울 30-40대 여성 직장인/전문직 고객의 동의율이 72.5%로 전체 평균 대비 +19.3%p 높습니다
-									</p>
+					<div>
+						<h3 className="text-sm font-semibold text-foreground mb-3">인사이트</h3>
+						<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+							{insightItems.map((insight) => (
+								<div key={insight.tag} className="rounded-xl border bg-card p-5 space-y-3 hover:shadow-sm transition-shadow">
+									<div className="flex items-start justify-between gap-2">
+										<span className={cn("text-[11px] font-semibold px-2 py-0.5 rounded-full shrink-0", insight.tagCls)}>
+											{insight.tag}
+										</span>
+										<span className={cn("text-2xl font-bold tabular-nums leading-none", insight.statCls)}>
+											{insight.stat}
+										</span>
+									</div>
+									<div>
+										<p className="text-sm font-semibold text-foreground leading-snug">{insight.headline}</p>
+										<p className="text-xs text-muted-foreground leading-relaxed mt-1.5">{insight.body}</p>
+									</div>
 								</div>
-								<div className="rounded-lg border border-blue-200 bg-blue-50 dark:bg-blue-950/30 dark:border-blue-900 p-4">
-									<p className="text-sm text-blue-800 dark:text-blue-300">
-										초진 후 45일 이내 재방문한 고객의 동의율은 84.1%입니다. 재방문 유도가 동의 전환의 핵심입니다
-									</p>
-								</div>
-								<div className="rounded-lg border border-amber-200 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-900 p-4">
-									<p className="text-sm text-amber-800 dark:text-amber-300">
-										미동의 고객 중 20대 학생 비율이 동의 고객 대비 5.1배 높습니다. 연령대별 맞춤 상담 전략이 필요합니다
-									</p>
-								</div>
-							</div>
-						</CardContent>
-					</Card>
+							))}
+						</div>
+					</div>
 				</TabsContent>
 			</Tabs>
 		</div>
