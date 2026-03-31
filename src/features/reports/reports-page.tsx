@@ -1,11 +1,11 @@
+import { ArrowDown, ArrowUp, Download, TrendingUp } from "lucide-react";
+import { useSearchParams } from "react-router-dom";
+import { toast } from "sonner";
 import { PageHeader } from "@/components/common/page-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { ArrowDown, ArrowUp, Download, TrendingUp } from "lucide-react";
-import { useSearchParams } from "react-router-dom";
-import { toast } from "sonner";
 
 interface KpiMetric {
 	label: string;
@@ -23,9 +23,9 @@ const funnelMetrics: KpiMetric[] = [
 
 const retentionMetrics: KpiMetric[] = [
 	{ label: "재방문율", value: "67.3%", change: "+2.1%", positive: true },
+	{ label: "동의율 (치료 권유 환자 기준)", value: "88.4%", change: "+1.3%", positive: true },
 	{ label: "휴면율", value: "12.8%", change: "-1.3%", positive: true },
 	{ label: "노쇼율", value: "4.2%", change: "-0.5%", positive: true },
-	{ label: "평균 방문 주기", value: "28일", change: "-3일", positive: true },
 ];
 
 const revenueMetrics: KpiMetric[] = [
@@ -36,18 +36,18 @@ const revenueMetrics: KpiMetric[] = [
 ];
 
 const counselorPerformance = [
-	{ name: "이상담", consultations: 87, conversions: 62, rate: "71.3%", revenue: "₩12.8M", trend: true },
-	{ name: "박상담", consultations: 72, conversions: 48, rate: "66.7%", revenue: "₩10.2M", trend: false },
-	{ name: "김상담", consultations: 65, conversions: 41, rate: "63.1%", revenue: "₩9.5M", trend: true },
+	{ name: "이상담", consultations: 87, conversions: 62, rate: "71.3%", revenue: "₩12.8M", confirmedAmount: 9200000, consentCount: 55, consentRate: 88.7, trend: true },
+	{ name: "박상담", consultations: 72, conversions: 48, rate: "66.7%", revenue: "₩10.2M", confirmedAmount: 7100000, consentCount: 42, consentRate: 87.5, trend: false },
+	{ name: "김상담", consultations: 65, conversions: 41, rate: "63.1%", revenue: "₩9.5M",  confirmedAmount: 6300000, consentCount: 35, consentRate: 85.4, trend: true },
 ];
 
 const monthlyRetention = [
-	{ month: "10월", reVisit: 61.2, dormant: 15.2, noShow: 5.1 },
-	{ month: "11월", reVisit: 63.4, dormant: 14.1, noShow: 4.8 },
-	{ month: "12월", reVisit: 64.1, dormant: 14.5, noShow: 4.5 },
-	{ month: "1월", reVisit: 65.8, dormant: 13.7, noShow: 4.4 },
-	{ month: "2월", reVisit: 66.2, dormant: 13.2, noShow: 4.3 },
-	{ month: "3월", reVisit: 67.3, dormant: 12.8, noShow: 4.2 },
+	{ month: "10월", reVisit: 61.2, dormant: 15.2, noShow: 5.1, consent: 82.3 },
+	{ month: "11월", reVisit: 63.4, dormant: 14.1, noShow: 4.8, consent: 83.7 },
+	{ month: "12월", reVisit: 64.1, dormant: 14.5, noShow: 4.5, consent: 84.2 },
+	{ month: "1월",  reVisit: 65.8, dormant: 13.7, noShow: 4.4, consent: 85.8 },
+	{ month: "2월",  reVisit: 66.2, dormant: 13.2, noShow: 4.3, consent: 87.1 },
+	{ month: "3월",  reVisit: 67.3, dormant: 12.8, noShow: 4.2, consent: 88.4 },
 ];
 
 const monthlyRevenue = [
@@ -67,6 +67,47 @@ const revenueByType = [
 	{ type: "교정 상담", revenue: 2800000, pct: 8.6 },
 	{ type: "기타", revenue: 2000000, pct: 6.2 },
 ];
+
+const consentAnalysis = {
+	consented: {
+		total: 187,
+		byOccupation: [
+			{ label: "직장인", pct: 38.5 }, { label: "전문직", pct: 24.1 },
+			{ label: "자영업", pct: 18.7 }, { label: "주부", pct: 12.3 },
+			{ label: "학생", pct: 4.3 },   { label: "기타", pct: 2.1 },
+		],
+		byRegion: [
+			{ label: "서울", pct: 51.3 }, { label: "경기", pct: 36.4 },
+			{ label: "인천", pct: 7.5 },  { label: "기타", pct: 4.8 },
+		],
+		byAge: [
+			{ label: "20대", pct: 12.8 }, { label: "30대", pct: 38.5 },
+			{ label: "40대", pct: 31.6 }, { label: "50대", pct: 12.3 },
+			{ label: "기타", pct: 4.8 },
+		],
+		maleRatio: 32.1,
+	},
+	nonConsented: {
+		total: 55,
+		byOccupation: [
+			{ label: "직장인", pct: 29.1 }, { label: "학생", pct: 21.8 },
+			{ label: "주부", pct: 18.2 },  { label: "자영업", pct: 16.4 },
+			{ label: "전문직", pct: 10.9 }, { label: "기타", pct: 3.6 },
+		],
+		byRegion: [
+			{ label: "서울", pct: 40.0 }, { label: "경기", pct: 41.8 },
+			{ label: "인천", pct: 10.9 }, { label: "기타", pct: 7.3 },
+		],
+		byAge: [
+			{ label: "20대", pct: 29.1 }, { label: "30대", pct: 25.5 },
+			{ label: "40대", pct: 21.8 }, { label: "50대", pct: 16.4 },
+			{ label: "기타", pct: 7.3 },
+		],
+		maleRatio: 52.7,
+	},
+};
+
+const formatCurrency = (n: number) => `₩${(n / 1000000).toFixed(1)}M`;
 
 function MetricGrid({ metrics }: { metrics: KpiMetric[] }) {
 	return (
@@ -156,6 +197,7 @@ export function ReportsPage() {
 					<TabsTrigger value="retention">리텐션</TabsTrigger>
 					<TabsTrigger value="revenue">매출 분석</TabsTrigger>
 					<TabsTrigger value="counselor">상담 실장 성과</TabsTrigger>
+					<TabsTrigger value="analysis">동의 분석</TabsTrigger>
 				</TabsList>
 
 				{/* ── 전환 분석 ── */}
@@ -238,6 +280,23 @@ export function ReportsPage() {
 							</CardContent>
 						</Card>
 					</div>
+
+					<Card>
+						<CardHeader>
+							<CardTitle className="text-base">월별 동의율 추이</CardTitle>
+							<p className="text-xs text-muted-foreground">치료를 권유받은 환자 중 실제 동의한 비율 (동의율 = 동의 수 / 권유받은 전체 수 × 100)</p>
+						</CardHeader>
+						<CardContent>
+							<HBarChart
+								data={monthlyRetention as unknown as Record<string, unknown>[]}
+								valueKey="consent"
+								labelKey="month"
+								maxValue={100}
+								colorClass="bg-emerald-500"
+								formatValue={(v) => `${v}%`}
+							/>
+						</CardContent>
+					</Card>
 				</TabsContent>
 
 				{/* ── 매출 분석 ── */}
@@ -306,7 +365,6 @@ export function ReportsPage() {
 
 				{/* ── 상담 실장 성과 ── */}
 				<TabsContent value="counselor" className="mt-4 space-y-5">
-					{/* 요약 카드 */}
 					<div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
 						{counselorPerformance.map((c) => (
 							<Card key={c.name}>
@@ -324,16 +382,16 @@ export function ReportsPage() {
 											<p className="text-lg font-bold">{c.consultations}</p>
 										</div>
 										<div>
-											<p className="text-xs text-muted-foreground">전환율</p>
-											<p className="text-lg font-bold text-emerald-600">{c.rate}</p>
+											<p className="text-xs text-muted-foreground">확정 금액</p>
+											<p className="text-lg font-bold">{formatCurrency(c.confirmedAmount)}</p>
+										</div>
+										<div>
+											<p className="text-xs text-muted-foreground">동의율</p>
+											<p className={cn("text-lg font-bold", c.consentRate >= 88 ? "text-emerald-600" : "text-amber-600")}>{c.consentRate}%</p>
 										</div>
 										<div>
 											<p className="text-xs text-muted-foreground">전환 건수</p>
 											<p className="text-lg font-bold">{c.conversions}</p>
-										</div>
-										<div>
-											<p className="text-xs text-muted-foreground">매출 기여</p>
-											<p className="text-lg font-bold">{c.revenue}</p>
 										</div>
 									</div>
 								</CardContent>
@@ -355,6 +413,8 @@ export function ReportsPage() {
 											<th className="text-center py-3 px-4 text-xs font-medium text-muted-foreground">전환 건수</th>
 											<th className="text-center py-3 px-4 text-xs font-medium text-muted-foreground">전환율</th>
 											<th className="text-right py-3 px-4 text-xs font-medium text-muted-foreground">매출 기여</th>
+											<th className="text-right py-3 px-4 text-xs font-medium text-muted-foreground">확정금액</th>
+											<th className="text-center py-3 px-4 text-xs font-medium text-muted-foreground">동의율</th>
 										</tr>
 									</thead>
 									<tbody>
@@ -367,10 +427,167 @@ export function ReportsPage() {
 													<span className="text-emerald-600 font-semibold">{c.rate}</span>
 												</td>
 												<td className="py-3 px-4 text-right font-semibold">{c.revenue}</td>
+												<td className="py-3 px-4 text-right font-semibold">{formatCurrency(c.confirmedAmount)}</td>
+												<td className="py-3 px-4 text-center">
+													<span className={cn("font-semibold", c.consentRate >= 88 ? "text-emerald-600" : "text-amber-600")}>{c.consentRate}%</span>
+												</td>
 											</tr>
 										))}
 									</tbody>
 								</table>
+							</div>
+						</CardContent>
+					</Card>
+				</TabsContent>
+
+				{/* ── 동의 분석 ── */}
+				<TabsContent value="analysis" className="mt-4 space-y-5">
+					{/* 정의 배너 */}
+					<div className="flex items-start gap-3 rounded-lg border border-blue-200 bg-blue-50 p-3.5">
+						<div className="h-5 w-5 rounded-full bg-blue-500 flex items-center justify-center shrink-0 mt-0.5">
+							<span className="text-white text-xs font-bold">i</span>
+						</div>
+						<div>
+							<p className="text-sm font-medium text-blue-900">동의율 계산 기준</p>
+							<p className="text-xs text-blue-700 mt-0.5">
+								<strong>동의율(%) = 치료를 권유받은 환자 중 실제로 동의한 수 / 치료를 권유받은 전체 수 × 100</strong>
+							</p>
+							<p className="text-xs text-blue-600 mt-1">단순 내원·검진 환자는 분모에서 제외됩니다.</p>
+						</div>
+					</div>
+
+					<div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+						{/* 동의 고객 프로필 */}
+						<Card>
+							<CardHeader>
+								<CardTitle className="text-base">동의 고객 프로필 ({consentAnalysis.consented.total}명)</CardTitle>
+							</CardHeader>
+							<CardContent className="space-y-5">
+								<div className="text-center">
+									<p className="text-4xl font-bold text-emerald-600">88.4%</p>
+									<p className="text-xs text-muted-foreground mt-1">치료 권유 환자 기준 동의율</p>
+								</div>
+
+								<div>
+									<p className="text-xs font-medium text-muted-foreground mb-2">직업군</p>
+									<HBarChart
+										data={consentAnalysis.consented.byOccupation as unknown as Record<string, unknown>[]}
+										valueKey="pct"
+										labelKey="label"
+										maxValue={100}
+										colorClass="bg-emerald-500"
+										formatValue={(v) => `${v}%`}
+									/>
+								</div>
+
+								<div>
+									<p className="text-xs font-medium text-muted-foreground mb-2">지역</p>
+									<HBarChart
+										data={consentAnalysis.consented.byRegion as unknown as Record<string, unknown>[]}
+										valueKey="pct"
+										labelKey="label"
+										maxValue={100}
+										colorClass="bg-emerald-500"
+										formatValue={(v) => `${v}%`}
+									/>
+								</div>
+
+								<div>
+									<p className="text-xs font-medium text-muted-foreground mb-2">연령대</p>
+									<HBarChart
+										data={consentAnalysis.consented.byAge as unknown as Record<string, unknown>[]}
+										valueKey="pct"
+										labelKey="label"
+										maxValue={100}
+										colorClass="bg-emerald-500"
+										formatValue={(v) => `${v}%`}
+									/>
+								</div>
+
+								<div className="flex items-center justify-between text-xs text-muted-foreground border-t pt-3">
+									<span>남성 비율</span>
+									<span className="font-semibold text-foreground">{consentAnalysis.consented.maleRatio}%</span>
+								</div>
+							</CardContent>
+						</Card>
+
+						{/* 미동의 고객 프로필 */}
+						<Card>
+							<CardHeader>
+								<CardTitle className="text-base">미동의 고객 프로필 ({consentAnalysis.nonConsented.total}명)</CardTitle>
+							</CardHeader>
+							<CardContent className="space-y-5">
+								<div className="text-center">
+									<p className="text-4xl font-bold text-rose-500">11.6%</p>
+									<p className="text-xs text-muted-foreground mt-1">미동의율</p>
+								</div>
+
+								<div>
+									<p className="text-xs font-medium text-muted-foreground mb-2">직업군</p>
+									<HBarChart
+										data={consentAnalysis.nonConsented.byOccupation as unknown as Record<string, unknown>[]}
+										valueKey="pct"
+										labelKey="label"
+										maxValue={100}
+										colorClass="bg-rose-500"
+										formatValue={(v) => `${v}%`}
+									/>
+								</div>
+
+								<div>
+									<p className="text-xs font-medium text-muted-foreground mb-2">지역</p>
+									<HBarChart
+										data={consentAnalysis.nonConsented.byRegion as unknown as Record<string, unknown>[]}
+										valueKey="pct"
+										labelKey="label"
+										maxValue={100}
+										colorClass="bg-rose-500"
+										formatValue={(v) => `${v}%`}
+									/>
+								</div>
+
+								<div>
+									<p className="text-xs font-medium text-muted-foreground mb-2">연령대</p>
+									<HBarChart
+										data={consentAnalysis.nonConsented.byAge as unknown as Record<string, unknown>[]}
+										valueKey="pct"
+										labelKey="label"
+										maxValue={100}
+										colorClass="bg-rose-500"
+										formatValue={(v) => `${v}%`}
+									/>
+								</div>
+
+								<div className="flex items-center justify-between text-xs text-muted-foreground border-t pt-3">
+									<span>남성 비율</span>
+									<span className="font-semibold text-foreground">{consentAnalysis.nonConsented.maleRatio}%</span>
+								</div>
+							</CardContent>
+						</Card>
+					</div>
+
+					{/* 인사이트 */}
+					<Card>
+						<CardHeader>
+							<CardTitle className="text-base">인사이트</CardTitle>
+						</CardHeader>
+						<CardContent>
+							<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+								<div className="rounded-lg border border-emerald-200 bg-emerald-50 dark:bg-emerald-950/30 dark:border-emerald-900 p-4">
+									<p className="text-sm text-emerald-800 dark:text-emerald-300">
+										서울 30-40대 여성 직장인/전문직 고객의 동의율이 72.5%로 전체 평균 대비 +19.3%p 높습니다
+									</p>
+								</div>
+								<div className="rounded-lg border border-blue-200 bg-blue-50 dark:bg-blue-950/30 dark:border-blue-900 p-4">
+									<p className="text-sm text-blue-800 dark:text-blue-300">
+										초진 후 45일 이내 재방문한 고객의 동의율은 84.1%입니다. 재방문 유도가 동의 전환의 핵심입니다
+									</p>
+								</div>
+								<div className="rounded-lg border border-amber-200 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-900 p-4">
+									<p className="text-sm text-amber-800 dark:text-amber-300">
+										미동의 고객 중 20대 학생 비율이 동의 고객 대비 5.1배 높습니다. 연령대별 맞춤 상담 전략이 필요합니다
+									</p>
+								</div>
 							</div>
 						</CardContent>
 					</Card>
